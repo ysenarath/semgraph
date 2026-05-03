@@ -7,10 +7,17 @@ from tqdm import auto as tqdm
 from transformers import BartForConditionalGeneration
 
 from semgraph.models.amrbart.model_interface.tokenization_bart import AMRBartTokenizer
+from semgraph.utils import logging
 
 __all__ = [
     "AMRBart",
 ]
+
+logger = logging.get_logger(__name__)
+
+# TODO: consider using a more informative fallback AMR,
+# e.g., one that includes the original sentence as a comment
+_FALLBACK_AMR = "(z0 / amr-empty)"
 
 
 class AMRBart:
@@ -75,10 +82,18 @@ class AMRBart:
             try:
                 graph, status, _ = self.tokenizer.decode_amr(tokens=token_ids)
             except Exception as e:
-                raise RuntimeError(f"Failed to decode AMR for input: {text}") from e
+                logger.warning(
+                    "Failed to decode AMR for input %r: %s. Using fallback.", text, e
+                )
+                outputs.append(_FALLBACK_AMR)
+                continue
             try:
                 gs = penman.encode(graph, model=amr_model)
             except Exception as e:
-                raise RuntimeError(f"Failed to encode AMR for input: {text}") from e
+                logger.warning(
+                    "Failed to encode AMR for input %r: %s. Using fallback.", text, e
+                )
+                outputs.append(_FALLBACK_AMR)
+                continue
             outputs.append(gs)
         return outputs
