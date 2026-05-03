@@ -7,22 +7,28 @@ from semgraph.utils import logging
 
 logger = logging.get_logger(__name__)
 
-amrlib_data_dir = config.cache_dir / "amrlib" / "data"
+amrlib_data_dir = config.cache_dir / "data"
 
 paths = [
     amrlib_data_dir / "amr_annotation_3.0" / "data" / "amrs" / "split",
+    amrlib_data_dir / "amr_anno_1.0" / "data" / "split",
 ]
 
 name2index = {
-    "ldc2020t02": 0,
-    "amr_annotation_3": 0,
+    # 0 - AMR 3.0
     "amr_annotation_3.0": 0,
+    "amr_annotation_3": 0,
+    "ldc2020t02": 0,
+    # 1 - AMR 1.0
+    "amr_anno_1.0": 1,
+    "amr_anno_1": 1,
+    "ldc2014t12": 1,
 }
 
 
 def preprocess(name: str) -> dict[str, Path]:
     base_dir = paths[name2index[name.lower()]]
-    out_dir = amrlib_data_dir / name
+    out_dir = amrlib_data_dir / name.upper()
     out_dir.mkdir(parents=True, exist_ok=True)
     splits = {}
     # Loop through the dirctories

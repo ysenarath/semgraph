@@ -9,7 +9,7 @@ def load_dataset(name: str) -> dict[str, list[penman.Graph]]:
 
 
 if __name__ == "__main__":
-    dataset = load_dataset("LDC2020T02")
+    dataset = load_dataset("ldc2014t12")
     inputs = []
     for i in range(10):
         item = dataset["test"][i]
