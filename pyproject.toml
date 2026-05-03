@@ -23,6 +23,7 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
+    "accelerate>=1.13.0",
     "amrlib>=0.8.1",
     "appdirs>=1.4.4",
     "cached-property>=2.0.1",

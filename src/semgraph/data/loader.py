@@ -1,6 +1,6 @@
 import penman
 
-from semgraph.data.preprocess import preprocess
+from semgraph.data.utils import preprocess
 
 
 def load_dataset(name: str) -> dict[str, list[penman.Graph]]:

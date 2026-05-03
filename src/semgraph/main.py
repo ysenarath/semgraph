@@ -1,15 +1,14 @@
 import json
 
-import amrlib
 import penman
 from amrlib.evaluate.smatch_enhanced import compute_smatch
 from penman.models.amr import model as amr_model
 
 from semgraph import config
-from semgraph.data.loader import load_dataset
+from semgraph.data import load_dataset
 from semgraph.evaluate import get_entries_from_string
+from semgraph.models import load_pipeline
 from semgraph.utils import logging
-from semgraph.utils.device import get_device
 
 logger = logging.get_logger(__name__)
 
@@ -19,6 +18,7 @@ allowed_parse_model_names = [
     "model_parse_gsii-v0_1_0",
     "model_parse_t5-v0_2_0",
     "model_parse_xfm_bart_large-v0_1_0",
+    "xfbai/AMRBART-large-finetuned-AMR3.0-AMRParsing-v2",
 ]
 
 allowed_generate_model_names = [
@@ -27,17 +27,8 @@ allowed_generate_model_names = [
 
 
 def evaluate_model(model_name: str, dataset_name: str) -> dict:
-    amrlib_data_dir = config.cache_dir / "amrlib" / "data" / model_name
-
     dataset = load_dataset(dataset_name)
-
-    logger.info(f"Loading AMR parsing model from {amrlib_data_dir}...")
-    inference = amrlib.load_stog_model(
-        model_dir=amrlib_data_dir,
-        device=get_device(config.device),
-        batch_size=config.batch_size,
-    )
-    logger.info("Model loaded successfully.")
+    pipe = load_pipeline(model_name)
 
     input_graphs = []
     graphs_gold = []
@@ -53,7 +44,7 @@ def evaluate_model(model_name: str, dataset_name: str) -> dict:
     num_beams = 5 if "spring" in model_name else 4
 
     try:
-        gen = inference.parse_sents(
+        gen = pipe.parse_sents(
             input_graphs, disable_progress=False, num_beams=num_beams
         )
     except Exception as e:
@@ -61,12 +52,12 @@ def evaluate_model(model_name: str, dataset_name: str) -> dict:
             logger.warning(
                 f"Error during parsing with disable_progress=False and num_beams={num_beams}: {e}. Retrying without disable_progress."
             )
-            gen = inference.parse_sents(input_graphs, num_beams=num_beams)
+            gen = pipe.parse_sents(input_graphs, num_beams=num_beams)
         except Exception as e:
             logger.warning(
                 f"Error during parsing with num_beams={num_beams}: {e}. Retrying without num_beams."
             )
-            gen = inference.parse_sents(input_graphs)
+            gen = pipe.parse_sents(input_graphs)
 
     graphs_gen = [penman.decode(g, model=amr_model) for g in gen]
 

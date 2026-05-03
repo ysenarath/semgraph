@@ -6,9 +6,9 @@ import penman
 import regex as re
 from transformers import BartTokenizer
 
-from semgraph.amrbart.common import postprocessing
-from semgraph.amrbart.common.constant import raw_special_tokens, recategorizations
-from semgraph.amrbart.common.penman_interface import encode
+from semgraph.models.amrbart.common import postprocessing
+from semgraph.models.amrbart.common.constant import raw_special_tokens, recategorizations
+from semgraph.models.amrbart.common.penman_interface import encode
 
 
 class AMRBartTokenizer(BartTokenizer):

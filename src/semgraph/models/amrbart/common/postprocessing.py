@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 import networkx as nx
 import penman
 
-from semgraph.amrbart.common.penman_interface import encode
+from semgraph.models.amrbart.common.penman_interface import encode
 
 BACKOFF = penman.Graph(
     [
