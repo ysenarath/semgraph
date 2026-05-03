@@ -44,14 +44,18 @@ def load_pipeline(model_name_or_path: str, **kwargs) -> Pipeline:
 
 if __name__ == "__main__":
     models = [
-        "xfbai/AMRBART-large-finetuned-AMR3.0-AMRParsing-v2",
         "model_parse_spring-v0_1_0",
+        "xfbai/AMRBART-large-finetuned-AMR3.0-AMRParsing-v2",
     ]
     for model_name in models:
+        print(f"Testing model: {model_name}")
         pipe = load_pipeline(model_name)
+        # sentences = [
+        #     "The cat sat on the mat.",
+        #     "The dog barked loudly.",
+        # ]
         sentences = [
-            "The cat sat on the mat.",
-            "The dog barked loudly.",
+            "U.S. and European officials may impose a 4th round of sanctions on Tehran when the U.N. Security Council considers the issue of Iran's nuclear energy program most likely in September 2007."
         ]
         graphs = pipe.parse_sents(sentences)
         for graph in graphs:
